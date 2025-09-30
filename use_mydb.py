@@ -1,8 +1,10 @@
 from mydb import MyDB
 import os
 
-
-os.remove('test_data.dat')
+exists = os.path.isfile('test_data.dat') 
+if exists:
+    os.remove('test_data.dat')
+    
 exists = os.path.isfile('test_data.dat') 
 assert not exists
 a_db = MyDB("test_data.dat")
