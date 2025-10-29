@@ -4,7 +4,8 @@ import subprocess
 import time
 import requests
 import pytest
-import json
+import socket
+import sys
 
 
 @pytest.fixture(scope="session")
@@ -12,14 +13,22 @@ def server_process():
     """Start the squirrel server once for all tests"""
     # Reset database to clean state
     shutil.copy("empty_squirrel_db.db", "squirrel_db.db")
-    
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.bind(('0.0.0.0', 8080))
+    except socket.error as e:
+        print(f"Error: {e}")
+        raise Exception(f"Error: You can't have another squirrel_server running.")
+    finally:
+        s.close()
     # Start server process
     process = subprocess.Popen(
         ["python3", "squirrel_server.py"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
-    
+
     # Wait for server to start
     time.sleep(1)
     

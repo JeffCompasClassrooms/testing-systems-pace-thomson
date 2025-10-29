@@ -19,3 +19,15 @@ Write a system test suite for each of two different Python programs. Implement b
 - Continue using describe blocks to appropriately describe components (API methods, failure conditions, etc.). Thoroughly and intentionally plan and design your test cases to achieve full test coverage of the test subjects. Try to maximize the number of test cases and minimize the number of assertions in each test case.
 
 - Your submission will be evaluated according to the quality, variety, coverage, and intentional design of your test cases. You must implement all test cases using black-box system testing. You will be graded according to the completeness and correctness of your test suite.
+
+---
+
+8/10 - test mydb
+
+14/20 - test squirrels
+
+(-5 for not solving the 'theres a server running already problem')
+
+-2 missing edge and boundary cases. 
+
+You can fix these things and I'll give you points back
