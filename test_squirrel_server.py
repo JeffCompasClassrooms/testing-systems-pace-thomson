@@ -138,6 +138,18 @@ def describe_SquirrelServer():
             assert second_response.status_code == 200
             assert first_response.json()["name"] == "First"
             assert second_response.json()["name"] == "Second"
+
+        def it_correctly_handles_bad_requests(server_process, base_url, clean_database):
+            """Test malformed POST bodies"""
+            requests.post(f"{base_url}/squirrels", data={"name": "First"})
+            requests.post(f"{base_url}/squirrels", data={"size": "medium"})
+            
+            # Verify both squirrels exist with correct IDs
+            first_response = requests.get(f"{base_url}/squirrels/1")
+            second_response = requests.get(f"{base_url}/squirrels/2")
+            
+            assert first_response.status_code == 400
+            assert second_response.status_code == 400
     
     def describe_PUT_squirrels():
         """Test PUT /squirrels/{id} endpoint"""
