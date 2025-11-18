@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main # or master, develop, etc. - the branch you want to trigger tests on
+  workflow_call: {}
 
 jobs:
   test:
