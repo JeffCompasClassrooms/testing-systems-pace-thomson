@@ -27,4 +27,4 @@ jobs:
         run: ls -R
         
       - name: Run tests
-        run: pytest --spec 
+        run: pytest --spec test_mydb.py test_squirrel_server.py
