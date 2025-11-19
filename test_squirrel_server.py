@@ -5,36 +5,53 @@ import time
 import requests
 import pytest
 import socket
-import sys
+# import sys
+
+
+# store chosen port for other fixtures
+CONFIGURED_PORT = None
 
 
 @pytest.fixture(scope="session")
 def server_process():
     """Start the squirrel server once for all tests"""
+
+    global CONFIGURED_PORT
+
     # Reset database to clean state
     shutil.copy("empty_squirrel_db.db", "squirrel_db.db")
 
+    # Decide port: try 8080 → fallback 8090
+    chosen_port = 8080
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     try:
-        s.bind(('0.0.0.0', 8080))
-    except socket.error as e:
-        print(f"Error: {e}")
-        raise Exception(f"Error: You can't have another squirrel_server running.")
+        s.bind(("0.0.0.0", chosen_port))
+    except socket.error:
+        print('8080 Socket is already open')
+        chosen_port = 8090
+        try:
+            s.bind(("0.0.0.0", chosen_port))
+        except socket.error:
+            raise Exception("Error: No available port (8080 or 8090).")
     finally:
         s.close()
-    # Start server process
+
+    CONFIGURED_PORT = chosen_port
+
+    # Start server on that port
     process = subprocess.Popen(
-        ["python3", "squirrel_server.py"],
+        ["python3", "squirrel_server.py", str(chosen_port)],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
 
     # Wait for server to start
     time.sleep(1)
-    
+
     yield process
-    
-    # Cleanup: terminate server and restore database
+
+    # Cleanup
     process.terminate()
     process.wait()
     if os.path.exists("squirrel_db.db"):
@@ -43,7 +60,9 @@ def server_process():
 
 @pytest.fixture
 def base_url():
-    return "http://127.0.0.1:8080"
+    """Use the configured port from server_process"""
+    global CONFIGURED_PORT
+    return f"http://127.0.0.1:{CONFIGURED_PORT}"
 
 
 @pytest.fixture(scope="function")

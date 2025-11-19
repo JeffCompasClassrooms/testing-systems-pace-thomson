@@ -1,3 +1,4 @@
+import sys
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
@@ -122,14 +123,23 @@ class SquirrelServerHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(bytes("404 Not Found", "utf-8"))
 
-def run():
-    print("squirrel_server running at 127.0.0.1:8080")
-    listen = ("127.0.0.1", 8080)
+def run(port=8080):
+    print(f"squirrel_server running at 127.0.0.1:{port}")
+    listen = ("127.0.0.1", port)
     server = HTTPServer(listen, SquirrelServerHandler)
     server.serve_forever()
 
 if __name__ == '__main__':
+    port = 8080  # default
+
+    if len(sys.argv) > 1:
+        try:
+            port = int(sys.argv[1])
+        except ValueError:
+            print("Port must be an integer.")
+            sys.exit(1)
+
     try:
-        run()
+        run(port)
     except KeyboardInterrupt:
-        print('ur done')
+        print("ur done")
